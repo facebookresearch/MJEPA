@@ -1,0 +1,5 @@
+/path/to/audioset/balanced_train_segments/audio/clip00001_30000_40000.flac /path/to/audioset/balanced_train_segments/video_256px/clip00001_30000_40000.mp4 /m/09x0r /t/dd00088
+/path/to/audioset/balanced_train_segments/audio/clip00002_50000_60000.flac /path/to/audioset/balanced_train_segments/video_256px/clip00002_50000_60000.mp4 /m/012xff
+/path/to/audioset/balanced_train_segments/audio/clip00003_0_10000.flac /path/to/audioset/balanced_train_segments/video_256px/clip00003_0_10000.mp4 /m/03fwl /m/04rlf /m/09x0r
+/path/to/audioset/balanced_train_segments/audio/clip00004_30000_40000.flac /path/to/audioset/balanced_train_segments/video_256px/clip00004_30000_40000.mp4 /t/dd00003 /t/dd00005
+/path/to/audioset/balanced_train_segments/audio/clip00005_200000_210000.flac /path/to/audioset/balanced_train_segments/video_256px/clip00005_200000_210000.mp4 /m/032s66 /m/073cg4

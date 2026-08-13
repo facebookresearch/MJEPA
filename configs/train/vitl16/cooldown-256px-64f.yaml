@@ -1,0 +1,163 @@
+# MJEPA ViT-L cooldown phase (64 frames, linear LR decay)
+# Loads checkpoint from pre-training phase and fine-tunes with longer video context.
+
+app: mjepa
+nodes: 30
+tasks_per_node: 8
+cpus_per_task: 16
+mem_per_gpu: 220G
+folder: /path/to/output/mjepa_vitl_data_scaling_cooldown
+
+# Audio-Video dataset (AudioSet)
+data:
+  dataset_type: audio_video_dataset
+  datasets:
+  - /path/to/audioset_2m_train_audio_video_paths.csv
+  datasets_weights:
+  - 1.0
+  batch_size: 12
+  crop_size: 256
+  patch_size: 16
+  dataset_fpcs:
+  - 64
+  tubelet_size: 2
+  fps: 4
+  num_mel_bins: 128
+  target_length: 1024
+  audio_sample_rate: 16000
+  audio_mean: -4.268
+  audio_std: 4.569
+  num_workers: 10
+  persistent_workers: true
+  pin_mem: true
+
+# Video-only dataset (K710 + SSv2 + HowTo100M)
+data_video_only:
+  dataset_type: videodataset
+  datasets:
+  - /path/to/k710_train_paths.csv
+  - /path/to/ssv2_train_paths.csv
+  - /path/to/howto100m_paths.csv
+  datasets_weights:
+  - 0.335
+  - 0.100
+  - 0.565
+  batch_size: 12
+  crop_size: 256
+  patch_size: 16
+  dataset_fpcs:
+  - 64
+  - 64
+  - 64
+  tubelet_size: 2
+  fps: 4
+  num_workers: 8
+  persistent_workers: true
+  pin_mem: true
+  rank_ratio: 0.80
+
+data_aug:
+  auto_augment: false
+  motion_shift: false
+  random_resize_aspect_ratio:
+  - 0.75
+  - 1.35
+  random_resize_scale:
+  - 0.3
+  - 1.0
+  reprob: 0.0
+
+loss:
+  loss_exp: 1.0
+  coef_video_only_v2v: 5.0
+
+mask:
+- aspect_ratio:
+  - 0.75
+  - 1.5
+  full_complement: false
+  max_keep: null
+  max_temporal_keep: 1.0
+  num_blocks: 8
+  spatial_scale:
+  - 0.15
+  - 0.15
+  temporal_scale:
+  - 1.0
+  - 1.0
+  audio_mask_ratio:
+  - 0.75
+  - 0.80
+  audio_input_size:
+  - 1024
+  - 128
+  audio_patch_size: 16
+- aspect_ratio:
+  - 0.75
+  - 1.5
+  full_complement: false
+  max_keep: null
+  max_temporal_keep: 1.0
+  num_blocks: 2
+  spatial_scale:
+  - 0.7
+  - 0.7
+  temporal_scale:
+  - 1.0
+  - 1.0
+  audio_mask_ratio:
+  - 0.75
+  - 0.80
+  audio_input_size:
+  - 1024
+  - 128
+  audio_patch_size: 16
+
+meta:
+  dtype: bfloat16
+  eval_freq: 100
+  load_checkpoint: true
+  read_checkpoint: null
+  save_every_freq: 10
+  seed: 42
+  use_sdpa: true
+
+model:
+  model_name: vit_large
+  pred_depth: 24
+  pred_embed_dim: 384
+  pred_num_heads: 12
+  uniform_power: true
+  use_activation_checkpointing: true
+  use_mask_tokens: true
+  use_rope: false
+  zero_init_mask_tokens: true
+  audio_patch_size: 16
+  audio_input_size:
+  - 1024
+  - 128
+  audio_in_chans: 1
+  audio_feature_pooling: mean
+  video_feature_pooling: mean
+  cross_modal_pooling: mean
+
+optimization:
+  is_anneal: true
+  anneal_ckpt: /path/to/pretrain_checkpoint.pt
+  resume_anneal: true
+  warmup: 0
+  start_lr: 0.0001
+  lr: 0.000525
+  final_lr: 1.0e-06
+  epochs: 40
+  ipe: 300
+  ipe_scale: 1.25
+  weight_decay: 0.04
+  final_weight_decay: 0.04
+  ema:
+  - 0.999
+  - 0.999
+  betas:
+  - 0.9
+  - 0.995
+  accumulation_steps: 1

@@ -1,0 +1,13 @@
+*.pyc
+__pycache__/
+
+.vscode/
+.*.swp
+
+*.egg-info/
+*.ipynb_checkpoints/
+
+# Local experiment scratch space
+configs/local/
+traces/
+third_party/*

@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 119
+select = E,F,W
+# E203, W503: conflict with black's formatting.
+# E226: in pycodestyle's default ignore list; re-enabled by `select = E`, and
+#       black deliberately emits it for tightly-bound arithmetic.
+ignore = E203,E226,E701,W503
+# The eval entrypoints must set CUDA_VISIBLE_DEVICES from SLURM_LOCALID before
+# torch is imported, so their imports cannot all sit at the top of the file.
+per-file-ignores =
+    __init__.py:F401
+    version.py:F401
+    evals/audio_classification_frozen/eval.py:E402
+    evals/audio_classification_frozen/eval_video.py:E402

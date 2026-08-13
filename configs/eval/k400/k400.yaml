@@ -1,0 +1,71 @@
+# MJEPA Frozen Video Evaluation on Kinetics-400
+# 400-class action recognition. 16 frames, 8 segments x 3 spatial views.
+
+cpus_per_task: 16
+eval_name: video_classification_frozen
+folder: /path/to/output/eval/k400
+mem_per_gpu: 220G
+nodes: 8
+num_workers: 8
+resume_checkpoint: true
+tag: k400-frozen
+tasks_per_node: 8
+
+experiment:
+  classifier:
+    num_heads: 16
+    num_probe_blocks: 4
+
+  data:
+    dataset_type: VideoDataset
+    dataset_train: /path/to/k400_train_paths.csv
+    dataset_val: /path/to/k400_val_paths.csv
+    frame_step: 4
+    frames_per_clip: 16
+    num_classes: 400
+    num_segments: 8
+    num_views_per_segment: 3
+    resolution: 256
+
+  optimization:
+    batch_size: 4
+    num_epochs: 30
+    use_bfloat16: true
+    use_pos_embed: false
+    multihead_kwargs:
+    - {lr: 0.005, start_lr: 0.005, final_lr: 0.0, weight_decay: 0.01, final_weight_decay: 0.01, warmup: 0.0}
+    - {lr: 0.003, start_lr: 0.003, final_lr: 0.0, weight_decay: 0.01, final_weight_decay: 0.01, warmup: 0.0}
+    - {lr: 0.001, start_lr: 0.001, final_lr: 0.0, weight_decay: 0.01, final_weight_decay: 0.01, warmup: 0.0}
+    - {lr: 0.0003, start_lr: 0.0003, final_lr: 0.0, weight_decay: 0.01, final_weight_decay: 0.01, warmup: 0.0}
+    - {lr: 0.0001, start_lr: 0.0001, final_lr: 0.0, weight_decay: 0.01, final_weight_decay: 0.01, warmup: 0.0}
+    - {lr: 0.005, start_lr: 0.005, final_lr: 0.0, weight_decay: 0.1, final_weight_decay: 0.1, warmup: 0.0}
+    - {lr: 0.003, start_lr: 0.003, final_lr: 0.0, weight_decay: 0.1, final_weight_decay: 0.1, warmup: 0.0}
+    - {lr: 0.001, start_lr: 0.001, final_lr: 0.0, weight_decay: 0.1, final_weight_decay: 0.1, warmup: 0.0}
+    - {lr: 0.0003, start_lr: 0.0003, final_lr: 0.0, weight_decay: 0.1, final_weight_decay: 0.1, warmup: 0.0}
+    - {lr: 0.0001, start_lr: 0.0001, final_lr: 0.0, weight_decay: 0.1, final_weight_decay: 0.1, warmup: 0.0}
+    - {lr: 0.005, start_lr: 0.005, final_lr: 0.0, weight_decay: 0.4, final_weight_decay: 0.4, warmup: 0.0}
+    - {lr: 0.003, start_lr: 0.003, final_lr: 0.0, weight_decay: 0.4, final_weight_decay: 0.4, warmup: 0.0}
+    - {lr: 0.001, start_lr: 0.001, final_lr: 0.0, weight_decay: 0.4, final_weight_decay: 0.4, warmup: 0.0}
+    - {lr: 0.0003, start_lr: 0.0003, final_lr: 0.0, weight_decay: 0.4, final_weight_decay: 0.4, warmup: 0.0}
+    - {lr: 0.0001, start_lr: 0.0001, final_lr: 0.0, weight_decay: 0.4, final_weight_decay: 0.4, warmup: 0.0}
+    - {lr: 0.005, start_lr: 0.005, final_lr: 0.0, weight_decay: 0.8, final_weight_decay: 0.8, warmup: 0.0}
+    - {lr: 0.003, start_lr: 0.003, final_lr: 0.0, weight_decay: 0.8, final_weight_decay: 0.8, warmup: 0.0}
+    - {lr: 0.001, start_lr: 0.001, final_lr: 0.0, weight_decay: 0.8, final_weight_decay: 0.8, warmup: 0.0}
+    - {lr: 0.0003, start_lr: 0.0003, final_lr: 0.0, weight_decay: 0.8, final_weight_decay: 0.8, warmup: 0.0}
+    - {lr: 0.0001, start_lr: 0.0001, final_lr: 0.0, weight_decay: 0.8, final_weight_decay: 0.8, warmup: 0.0}
+
+model_kwargs:
+  checkpoint: /path/to/mjepa_checkpoint.pt
+  module_name: evals.video_classification_frozen.modelcustom.mjepa_encoder_multiclip
+  pretrain_kwargs:
+    encoder:
+      checkpoint_key: target_encoder
+      model_name: vit_large
+      video_img_size: [256, 256]
+      patch_size: 16
+      tubelet_size: 2
+      uniform_power: true
+      use_rope: false
+  wrapper_kwargs:
+    max_frames: 128
+    use_pos_embed: false

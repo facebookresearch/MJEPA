@@ -1,0 +1,77 @@
+# MJEPA Frozen Audio-Video Evaluation on AudioSet-20K
+# Uses frozen MJEPA encoder with concatenated audio+video tokens + attentive probe.
+
+cpus_per_task: 16
+eval_name: audio_classification_frozen
+folder: /path/to/output/eval/as20k_audio_video
+mem_per_gpu: 220G
+nodes: 1
+num_workers: 8
+resume_checkpoint: true
+tag: as20k-audio-video-frozen
+tasks_per_node: 1
+
+experiment:
+  classifier:
+    num_heads: 16
+    num_probe_blocks: 4
+
+  data:
+    dataset_type: audioset_audio_video
+    train_csv: /path/to/audioset/balanced_train_audio_video_label_paths.csv
+    val_csv: /path/to/audioset/eval_audio_video_label_paths.csv
+    num_classes: 527
+    num_mel_bins: 128
+    target_length: 1024
+    sample_rate: 16000
+    audio_mean: -4.268
+    audio_std: 4.569
+    frames_per_clip: 16
+    fps: 4
+    crop_size: 256
+
+  optimization:
+    batch_size: 48
+    num_epochs: 20
+    use_bfloat16: true
+    multihead_kwargs:
+    - {lr: 0.005, start_lr: 0.005, final_lr: 0.0, weight_decay: 0.01, final_weight_decay: 0.01, warmup: 0.0}
+    - {lr: 0.003, start_lr: 0.003, final_lr: 0.0, weight_decay: 0.01, final_weight_decay: 0.01, warmup: 0.0}
+    - {lr: 0.001, start_lr: 0.001, final_lr: 0.0, weight_decay: 0.01, final_weight_decay: 0.01, warmup: 0.0}
+    - {lr: 0.0003, start_lr: 0.0003, final_lr: 0.0, weight_decay: 0.01, final_weight_decay: 0.01, warmup: 0.0}
+    - {lr: 0.0001, start_lr: 0.0001, final_lr: 0.0, weight_decay: 0.01, final_weight_decay: 0.01, warmup: 0.0}
+    - {lr: 0.005, start_lr: 0.005, final_lr: 0.0, weight_decay: 0.05, final_weight_decay: 0.05, warmup: 0.0}
+    - {lr: 0.003, start_lr: 0.003, final_lr: 0.0, weight_decay: 0.05, final_weight_decay: 0.05, warmup: 0.0}
+    - {lr: 0.001, start_lr: 0.001, final_lr: 0.0, weight_decay: 0.05, final_weight_decay: 0.05, warmup: 0.0}
+    - {lr: 0.0003, start_lr: 0.0003, final_lr: 0.0, weight_decay: 0.05, final_weight_decay: 0.05, warmup: 0.0}
+    - {lr: 0.0001, start_lr: 0.0001, final_lr: 0.0, weight_decay: 0.05, final_weight_decay: 0.05, warmup: 0.0}
+    - {lr: 0.005, start_lr: 0.005, final_lr: 0.0, weight_decay: 0.1, final_weight_decay: 0.1, warmup: 0.0}
+    - {lr: 0.003, start_lr: 0.003, final_lr: 0.0, weight_decay: 0.1, final_weight_decay: 0.1, warmup: 0.0}
+    - {lr: 0.001, start_lr: 0.001, final_lr: 0.0, weight_decay: 0.1, final_weight_decay: 0.1, warmup: 0.0}
+    - {lr: 0.0003, start_lr: 0.0003, final_lr: 0.0, weight_decay: 0.1, final_weight_decay: 0.1, warmup: 0.0}
+    - {lr: 0.0001, start_lr: 0.0001, final_lr: 0.0, weight_decay: 0.1, final_weight_decay: 0.1, warmup: 0.0}
+
+  augmentations:
+    use_mixup: true
+    mixup_alpha: 0.4
+    use_specaugment: false
+    use_time_shift: false
+    use_ema: true
+    ema_decay: 0.999
+
+model_kwargs:
+  checkpoint: /path/to/mjepa_checkpoint.pt
+  module_name: evals.audio_classification_frozen.modelcustom.mjepa_encoder_audio_video
+  pretrain_kwargs:
+    encoder:
+      checkpoint_key: target_encoder
+      model_name: vit_large
+      video_img_size: [256, 256]
+      audio_spectrogram_size: [1024, 128]
+      audio_patch_size: 16
+      patch_size: 16
+      tubelet_size: 2
+      uniform_power: true
+      use_rope: false
+  wrapper_kwargs:
+    feature_pooling: none

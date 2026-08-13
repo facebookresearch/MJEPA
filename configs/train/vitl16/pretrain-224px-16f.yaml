@@ -1,0 +1,112 @@
+# MJEPA ViT-L pre-training on AudioSet-2M (audio-video only)
+# This is the base MJEPA model from the paper.
+
+app: mjepa
+nodes: 2
+tasks_per_node: 8
+cpus_per_task: 16
+mem_per_gpu: 220G
+folder: /path/to/output/mjepa_vitl_pretrain
+
+data:
+  dataset_type: audio_video_dataset
+  datasets:
+  - /path/to/audioset_2m_train_audio_video_paths.csv
+  datasets_weights:
+  - 1.0
+  batch_size: 32
+  crop_size: 224
+  patch_size: 16
+  dataset_fpcs:
+  - 16
+  tubelet_size: 2
+  fps: 4
+  num_mel_bins: 128
+  target_length: 1024
+  audio_sample_rate: 16000
+  audio_mean: -4.268
+  audio_std: 4.569
+  num_workers: 8
+  persistent_workers: true
+  pin_mem: true
+
+data_aug:
+  auto_augment: false
+  motion_shift: false
+  random_resize_aspect_ratio:
+  - 0.75
+  - 1.35
+  random_resize_scale:
+  - 0.3
+  - 1.0
+  reprob: 0.0
+
+loss:
+  loss_exp: 1.0
+
+mask:
+- aspect_ratio:
+  - 0.75
+  - 1.5
+  full_complement: false
+  max_keep: null
+  max_temporal_keep: 1.0
+  num_blocks: 8
+  spatial_scale:
+  - 0.15
+  - 0.15
+  temporal_scale:
+  - 1.0
+  - 1.0
+  audio_mask_ratio:
+  - 0.75
+  - 0.80
+  audio_input_size:
+  - 1024
+  - 128
+  audio_patch_size: 16
+
+meta:
+  dtype: bfloat16
+  eval_freq: 100
+  load_checkpoint: true
+  read_checkpoint: null
+  save_every_freq: 50
+  seed: 42
+  use_sdpa: true
+
+model:
+  model_name: vit_large
+  pred_depth: 24
+  pred_embed_dim: 384
+  pred_num_heads: 12
+  uniform_power: true
+  use_activation_checkpointing: true
+  use_mask_tokens: true
+  use_rope: false
+  zero_init_mask_tokens: true
+  audio_patch_size: 16
+  audio_input_size:
+  - 1024
+  - 128
+  audio_in_chans: 1
+  audio_feature_pooling: mean
+  video_feature_pooling: mean
+  cross_modal_pooling: mean
+
+optimization:
+  ema:
+  - 0.999
+  - 1.0
+  epochs: 600
+  final_lr: 1.0e-06
+  final_weight_decay: 0.04
+  ipe: 300
+  ipe_scale: 1.25
+  lr: 0.000625
+  start_lr: 0.0001
+  warmup: 60
+  weight_decay: 0.04
+  betas:
+  - 0.9
+  - 0.995

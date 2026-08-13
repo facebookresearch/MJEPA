@@ -1,0 +1,5 @@
+/path/to/audioset/unbalanced_train_segments/audio/clip00001_0_10000.flac /path/to/audioset/unbalanced_train_segments/video_256px/clip00001_0_10000.mp4
+/path/to/audioset/unbalanced_train_segments/audio/clip00002_30000_40000.flac /path/to/audioset/unbalanced_train_segments/video_256px/clip00002_30000_40000.mp4
+/path/to/audioset/unbalanced_train_segments/audio/clip00003_30000_40000.flac /path/to/audioset/unbalanced_train_segments/video_256px/clip00003_30000_40000.mp4
+/path/to/audioset/unbalanced_train_segments/audio/clip00004_30000_40000.flac /path/to/audioset/unbalanced_train_segments/video_256px/clip00004_30000_40000.mp4
+/path/to/audioset/unbalanced_train_segments/audio/clip00005_21000_31000.flac /path/to/audioset/unbalanced_train_segments/video_256px/clip00005_21000_31000.mp4

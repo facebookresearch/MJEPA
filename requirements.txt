@@ -1,0 +1,15 @@
+torch>=2.0
+torchvision>=0.15
+torchaudio>=2.0
+numpy
+pandas
+pyyaml
+opencv-python
+decord
+timm
+einops
+psutil
+pillow
+scikit-learn
+scikit-image
+submitit
